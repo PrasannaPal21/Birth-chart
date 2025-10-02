@@ -1,0 +1,312 @@
+/* South Indian Chart Styles */
+.south-indian-chart-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+.chart-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.chart-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-subtitle {
+  font-size: 1.1rem;
+  color: #34495e;
+  margin: 0;
+}
+
+.south-indian-chart {
+  position: relative;
+  width: 500px;
+  height: 500px;
+  margin: 0 auto 2rem;
+  background: #ffffff;
+  border: 3px solid #2c3e50;
+  border-radius: 8px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.house-box {
+  border: 2px solid #34495e;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.house-box:hover {
+  background: linear-gradient(135deg, #e8f4f8 0%, #d1ecf1 100%);
+  transform: scale(1.02);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Specific house positions and borders */
+.house-1 { border-bottom: none; border-right: none; }
+.house-2 { border-right: none; border-top: none; border-bottom: none; }
+.house-3 { border-top: none; border-right: none; }
+.house-4 { border-bottom: none; border-left: none; }
+.house-5 { border-left: none; border-right: none; border-bottom: none; }
+.house-6 { border-left: none; border-right: none; border-bottom: none; }
+.house-7 { border-bottom: none; border-left: none; }
+.house-8 { border-left: none; border-top: none; border-bottom: none; }
+.house-9 { border-top: none; border-left: none; }
+.house-10 { border-top: none; border-right: none; }
+.house-11 { border-top: none; border-left: none; border-right: none; }
+.house-12 { border-top: none; border-left: none; border-right: none; }
+
+.house-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4px;
+}
+
+.house-number {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #7f8c8d;
+  background: #ecf0f1;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.house-sign {
+  font-size: 0.7rem;
+  color: #2c3e50;
+  font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+  line-height: 1.1;
+}
+
+.planets-in-house {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  min-height: 30px;
+}
+
+.planet-symbol {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.planet-symbol:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.lagna-marker {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 3px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.chart-center {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  width: 50%;
+  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+  border: 2px solid #d35400;
+  border-radius: 8px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.center-content {
+  text-align: center;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.chart-name {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.chart-date {
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+  opacity: 0.9;
+}
+
+.chart-place {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Legend */
+.chart-legend {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ecf0f1;
+}
+
+.chart-legend h4 {
+  margin: 0 0 1rem 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.8rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.legend-item:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.legend-symbol {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  min-width: 24px;
+  text-align: center;
+}
+
+.legend-name {
+  font-size: 0.9rem;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .south-indian-chart-container {
+    padding: 1rem;
+    margin: 1rem;
+  }
+  
+  .south-indian-chart {
+    width: 100%;
+    max-width: 400px;
+    height: 400px;
+  }
+  
+  .chart-title {
+    font-size: 1.5rem;
+  }
+  
+  .house-box {
+    padding: 6px;
+  }
+  
+  .house-number, .house-sign {
+    font-size: 0.65rem;
+  }
+  
+  .planet-symbol {
+    font-size: 0.65rem;
+    padding: 3px 5px;
+  }
+  
+  .legend-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .south-indian-chart {
+    width: 100%;
+    max-width: 320px;
+    height: 320px;
+  }
+  
+  .house-number, .house-sign {
+    font-size: 0.6rem;
+  }
+  
+  .planet-symbol {
+    font-size: 0.6rem;
+    padding: 2px 4px;
+  }
+  
+  .chart-center {
+    border-radius: 6px;
+  }
+  
+  .center-content {
+    font-size: 0.85rem;
+  }
+}
+
+.chart-error {
+  text-align: center;
+  color: #e74c3c;
+  font-size: 1.1rem;
+  padding: 2rem;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  margin: 1rem;
+}

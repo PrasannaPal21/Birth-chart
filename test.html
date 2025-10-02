@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vedic Astrology API Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        #loading {
+            text-align: center;
+            margin: 2rem 0;
+            display: none;
+        }
+        
+        #result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .planet-card {
+            background: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .house-card {
+            background: white;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 Vedic Astrology Chart Test</h1>
+        
+        <div style="background: #fff3cd; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border-left: 4px solid #ffc107;">
+            <h4>⚠️ CORS Notice</h4>
+            <p>If you see CORS errors in the console, the backend needs to be updated with CORS headers. 
+            See <code>CORS_DEPLOYMENT_INSTRUCTIONS.md</code> for deployment steps.</p>
+            <p><strong>Quick fix:</strong> The form will automatically try a CORS proxy if the direct API call fails.</p>
+        </div>
+        
+        <form id="chartForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" value="Test Person" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="birthplace">Birth Place:</label>
+                <input type="text" id="birthplace" value="Mumbai, India" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="datetime">Birth Date & Time:</label>
+                <input type="datetime-local" id="datetime" value="1990-05-15T14:30" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="latitude">Latitude:</label>
+                <input type="number" id="latitude" value="19.0760" step="0.0001" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="longitude">Longitude:</label>
+                <input type="number" id="longitude" value="72.8777" step="0.0001" required>
+            </div>
+            
+            <button type="submit">Calculate Chart</button>
+        </form>
+        
+        <div id="loading">
+            <p>🔄 Calculating your Vedic birth chart...</p>
+        </div>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('chartForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                birthplace: document.getElementById('birthplace').value,
+                birth_datetime: document.getElementById('datetime').value,
+                latitude: parseFloat(document.getElementById('latitude').value),
+                longitude: parseFloat(document.getElementById('longitude').value)
+            };
+            
+            try {
+                // Try direct API call first, fallback to CORS proxy if needed
+                let response;
+                try {
+                    response = await fetch('https://astro-calculations.onrender.com/vedic-chart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                } catch (corsError) {
+                    // If CORS fails, try with a CORS proxy
+                    console.log('CORS error detected, trying with proxy...');
+                    response = await fetch('https://cors-anywhere.herokuapp.com/https://astro-calculations.onrender.com/vedic-chart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                }
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                displayChart(data);
+                
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                result.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        });
+        
+        function displayChart(data) {
+            const result = document.getElementById('result');
+            
+            const planetsHtml = data.planets_sidereal.map(planet => `
+                <div class="planet-card">
+                    <strong>${planet.graha}</strong> - ${planet.sign} 
+                    (${planet.sidereal_deg.toFixed(2)}°)
+                </div>
+            `).join('');
+            
+            const housesHtml = data.houses_sidereal.map(house => `
+                <div class="house-card">
+                    <strong>House ${house.house}</strong> - ${house.sign} 
+                    (${house.cusp_deg.toFixed(2)}°)
+                </div>
+            `).join('');
+            
+            result.innerHTML = `
+                <h2>✅ Chart Calculated Successfully!</h2>
+                
+                <h3>📊 Basic Information</h3>
+                <p><strong>Name:</strong> ${data.name}</p>
+                <p><strong>Birth Place:</strong> ${data.birthplace}</p>
+                <p><strong>Lagna:</strong> ${data.lagna_sign}</p>
+                <p><strong>Moon Sign:</strong> ${data.moon_sign}</p>
+                <p><strong>Ayanamsa:</strong> ${data.ayanamsa_deg.toFixed(4)}°</p>
+                
+                <h3>🪐 Planetary Positions</h3>
+                ${planetsHtml}
+                
+                <h3>🏠 Houses (Sripati System)</h3>
+                ${housesHtml}
+            `;
+            
+            result.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

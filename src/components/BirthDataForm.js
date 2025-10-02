@@ -10,6 +10,8 @@ const BirthDataForm = ({ onSubmit }) => {
   });
 
   const [errors, setErrors] = useState({});
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const [geocodeError, setGeocodeError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,63 +53,60 @@ const BirthDataForm = ({ onSubmit }) => {
       }
     }
 
-    if (!formData.latitude) {
-      newErrors.latitude = 'Latitude is required';
-    } else {
-      const lat = parseFloat(formData.latitude);
-      if (isNaN(lat) || lat < -90 || lat > 90) {
-        newErrors.latitude = 'Latitude must be between -90 and 90';
-      }
-    }
-
-    if (!formData.longitude) {
-      newErrors.longitude = 'Longitude is required';
-    } else {
-      const lng = parseFloat(formData.longitude);
-      if (isNaN(lng) || lng < -180 || lng > 180) {
-        newErrors.longitude = 'Longitude must be between -180 and 180';
-      }
-    }
+    // Latitude and longitude are resolved automatically via geocoding
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const geocodeCity = async (query) => {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+    const response = await fetch(url, {
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    if (!response.ok) {
+      throw new Error(`Geocoding failed: ${response.status}`);
+    }
+    const results = await response.json();
+    if (!Array.isArray(results) || results.length === 0) {
+      throw new Error('No matching location found');
+    }
+    const top = results[0];
+    const lat = parseFloat(top.lat);
+    const lon = parseFloat(top.lon);
+    if (Number.isNaN(lat) || Number.isNaN(lon)) {
+      throw new Error('Invalid coordinates from geocoder');
+    }
+    return { latitude: lat, longitude: lon };
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setGeocodeError('');
     
-    if (validateForm()) {
+    if (!validateForm()) {
+      return;
+    }
+    
+    try {
+      setIsGeocoding(true);
+      const { latitude, longitude } = await geocodeCity(formData.birthplace);
       const submitData = {
         ...formData,
-        latitude: parseFloat(formData.latitude),
-        longitude: parseFloat(formData.longitude)
+        latitude,
+        longitude
       };
       onSubmit(submitData);
+    } catch (err) {
+      console.error('Geocoding error:', err);
+      setGeocodeError(err.message || 'Failed to find coordinates for the provided city');
+    } finally {
+      setIsGeocoding(false);
     }
   };
 
-  const popularCities = [
-    { name: 'New Delhi, India', lat: 28.6139, lng: 77.2090 },
-    { name: 'Mumbai, India', lat: 19.0760, lng: 72.8777 },
-    { name: 'Bangalore, India', lat: 12.9716, lng: 77.5946 },
-    { name: 'Chennai, India', lat: 13.0827, lng: 80.2707 },
-    { name: 'Kolkata, India', lat: 22.5726, lng: 88.3639 },
-    { name: 'Hyderabad, India', lat: 17.3850, lng: 78.4867 },
-    { name: 'Pune, India', lat: 18.5204, lng: 73.8567 },
-    { name: 'Ahmedabad, India', lat: 23.0225, lng: 72.5714 }
-  ];
-
-  const handleCitySelect = (e) => {
-    const selectedCity = popularCities.find(city => city.name === e.target.value);
-    if (selectedCity) {
-      setFormData(prev => ({
-        ...prev,
-        birthplace: selectedCity.name,
-        latitude: selectedCity.lat.toString(),
-        longitude: selectedCity.lng.toString()
-      }));
-    }
-  };
 
   return (
     <form className="birth-form" onSubmit={handleSubmit}>
@@ -127,21 +126,6 @@ const BirthDataForm = ({ onSubmit }) => {
         {errors.name && <span className="error-text">{errors.name}</span>}
       </div>
 
-      <div className="form-group">
-        <label htmlFor="citySelect">Quick Select Popular Cities (Optional)</label>
-        <select
-          id="citySelect"
-          onChange={handleCitySelect}
-          value=""
-        >
-          <option value="">-- Select a city to auto-fill coordinates --</option>
-          {popularCities.map(city => (
-            <option key={city.name} value={city.name}>
-              {city.name}
-            </option>
-          ))}
-        </select>
-      </div>
 
       <div className="form-group">
         <label htmlFor="birthplace">Birth Place *</label>
@@ -175,51 +159,23 @@ const BirthDataForm = ({ onSubmit }) => {
         </small>
       </div>
 
-      <div className="form-row">
+      {geocodeError && (
         <div className="form-group">
-          <label htmlFor="latitude">Latitude * (°N)</label>
-          <input
-            type="number"
-            id="latitude"
-            name="latitude"
-            value={formData.latitude}
-            onChange={handleChange}
-            placeholder="e.g., 19.0760"
-            step="0.0001"
-            min="-90"
-            max="90"
-            className={errors.latitude ? 'error' : ''}
-          />
-          {errors.latitude && <span className="error-text">{errors.latitude}</span>}
+          <span className="error-text">{geocodeError}</span>
         </div>
+      )}
 
-        <div className="form-group">
-          <label htmlFor="longitude">Longitude * (°E)</label>
-          <input
-            type="number"
-            id="longitude"
-            name="longitude"
-            value={formData.longitude}
-            onChange={handleChange}
-            placeholder="e.g., 72.8777"
-            step="0.0001"
-            min="-180"
-            max="180"
-            className={errors.longitude ? 'error' : ''}
-          />
-          {errors.longitude && <span className="error-text">{errors.longitude}</span>}
-        </div>
-      </div>
-
-      <button type="submit" className="submit-button">
+      <button type="submit" className="submit-button" disabled={isGeocoding}>
         Calculate Vedic Chart
       </button>
 
+      {isGeocoding && (
+        <div className="form-group">
+          <small className="help-text">Finding coordinates for your city...</small>
+        </div>
+      )}
+
       <div className="form-help">
-        <p>
-          <strong>Need coordinates?</strong> Use the city selector above or search 
-          "{formData.birthplace || 'your city'} coordinates" on Google.
-        </p>
         <p>
           <strong>Time accuracy:</strong> Birth time should be as accurate as possible 
           for precise ascendant calculation.

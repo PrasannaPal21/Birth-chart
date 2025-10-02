@@ -49,7 +49,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>🌟 Vedic Astrology Chart Calculator</h1>
+        <h1>🌟 Vedic Astrology Birth Chart Calculator</h1>
         <p>Generate accurate birth charts using traditional Vedic astrology principles</p>
       </header>
 
@@ -81,8 +81,9 @@ function App() {
 
       <footer className="app-footer">
         <p>
-          Powered by traditional Vedic astrology calculations | 
-          <span className="date-range"> Supports dates: 1899-2053</span>
+          Powered by traditional Vedic astrology calculations
+          <br />
+          <span className="date-range">Supports dates: 1899-2053</span>
         </p>
       </footer>
     </div>
